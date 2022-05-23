@@ -1,39 +1,31 @@
-import eventsCenter from "./EventsCenter.js"
-
 export default class LifeBehaviour {
    
-	constructor(scene,player, actualHp, maxHp) {
+	constructor(scene,player) {
         
 		this.scene = scene;
         this.player=player
-        this.actualHp=actualHp;
-        this.maxHp=maxHp;
+        this.hp=this.player.sprite.stats.ReturnLife();
+
 
         
 	}
 
-    ReturnMaxHp(){
-        return this.maxHp;
-    }
-
     ReturnHp(){
-        return this.actualHp;
+        return this.player.stats.ReturnLife()
     }
 
     DecreaseHp(value){
-        this.actualHp-=value;
-        eventsCenter.emit('update-Life', this.actualHp)
-        if(this.actualHp<=0){
-            this.actualHp=0;
+
+        this.hp-=value;
+        if(this.hp<=0){
+            this.hp=0;
             this.player.destroy();
             
         }
         
     }
     IncreaseHp(value){
-        this.actualHp+=value;
-        if(this.actualHp>this.maxHp){
-            this.actualHp=this.maxHp;
-        }
+
+        this.hp+=value;
     }
 }

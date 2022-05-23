@@ -8,7 +8,7 @@ export default class PathFinding {
         this.ObjectGot=player.sprite;
         this.Follow=objective.sprite;
         this.map=mapMesh
-        this.TileSize=tileSize+1
+        this.TileSize=tileSize
         this.meshPosition=meshPosition;
         this.delay=0.5;
         this.timer=1;
@@ -29,7 +29,7 @@ export default class PathFinding {
             }
             this.map2.push(this.line)
          }
-        this.graph= new Graph(this.map2);
+        this.graph= new Graph(this.map2, { diagonal: true });
   
 
         this.ReCalculate()
@@ -94,19 +94,20 @@ export default class PathFinding {
         var Ox
         var Oy 
 
-        this.Px= Phaser.Math.RoundTo(this.ObjectGot.x/this.TileSize, 0)
-        this.Py=Phaser.Math.RoundTo(this.ObjectGot.y/this.TileSize, 0)
+        this.Px= Phaser.Math.RoundTo((this.ObjectGot.x-this.TileSize/2)/this.TileSize, 0)
+        this.Py= Phaser.Math.RoundTo((this.ObjectGot.y-this.TileSize/2)/this.TileSize, 0)
 
         
-        this.Ox=Phaser.Math.RoundTo(this.Follow.x/this.TileSize, 0) 
-        this.Oy=Phaser.Math.RoundTo(this.Follow.y/this.TileSize, 0)
-        
+        this.Ox=Phaser.Math.RoundTo((this.Follow.x-this.TileSize/2)/this.TileSize, 0) 
+        this.Oy=Phaser.Math.RoundTo((this.Follow.y-this.TileSize/2)/this.TileSize, 0)
+   
         if(!isNaN(this.Px)){
             this.start= this.graph.grid[this.Px][this.Py];
             if(!isNaN(this.Ox)){
                 this.end= this.graph.grid[this.Ox][this.Oy];
         
-                this.Route = astar.search(this.graph, this.start, this.end);
+                this.Route = astar.search(this.graph, this.start, this.end, { heuristic: astar.heuristics.diagonal });
+                
             }
         }
 

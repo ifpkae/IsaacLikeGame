@@ -1,16 +1,19 @@
 
 import IsaacScene from "./IsaacScene.js";
-
-var DEFAULT_HEIGHT = 14*52// any height you want
+import Lvl2Scene from "./Lvl2Scene.js";
+var Lvl1 = new IsaacScene()
+var Lvl2 = new Lvl2Scene()
+console.log(Lvl1)
+var DEFAULT_HEIGHT = 14*52
 var DEFAULT_WIDTH = 28*52
 const config = {
-	type: Phaser.AUTO, // Which renderer to use
+	type: Phaser.AUTO,
 	mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
-	parent: "game-container", // ID of the DOM element to add the canvas to
-	scene: IsaacScene,
+	parent: "game-container",
+	scene: [Lvl2,Lvl1],
 	physics: {
 		default: "arcade",
 		arcade: {

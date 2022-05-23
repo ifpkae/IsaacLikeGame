@@ -1,3 +1,4 @@
+import Stats from "./StatsBehaviour.js";
 import MovementBehaviour from "./MovementBehaviour.js";
 
 export default class Bullet {
@@ -14,7 +15,8 @@ export default class Bullet {
         this.bullet.dir=this.dir;
         this.bullet.speed=this.speed;
         this.bullet.dmg=dmg;
-        this.bullet.move=new MovementBehaviour(this.scene, this.bullet, this.bullet.speed)
+        this.bullet.stats= new Stats(this, this.bullet, this.bullet.speed,this.bullet.dmg, 1,0)
+        this.bullet.move=new MovementBehaviour(this.scene, this.bullet)
 
         
 

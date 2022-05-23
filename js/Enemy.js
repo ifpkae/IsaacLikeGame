@@ -2,7 +2,7 @@
 import MovementBehaviour from "./MovementBehaviour.js";
 
 export default class Enemy {
-	constructor(scene, x, y, speed, objective) {
+	constructor(scene, x, y, objective) {
 		this.scene = scene;
 		this.Dead=false;
 		var HeadRecoverTimePassed;
@@ -10,7 +10,6 @@ export default class Enemy {
 		var LastDir;
 		this.LastDir=4
 		var ShootDir;
-		this.speed=speed;
 
         this.objective=objective;
 		// Create the animations we need from the player spritesheet
@@ -40,8 +39,8 @@ export default class Enemy {
 		
 		this.Object=this;
 		
-		this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12);
-        this.sprite.move=new MovementBehaviour(this.scene, this.sprite, this.speed)
+		this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12).setFriction(0, 0);
+        
 
 		this.sprite.head = scene.physics.add.sprite(x, y, "IsaacAtlas", "FrontFaceNormal").setSize(40, 40).setOffset(12, 12);
 		this.sprite.head.setDepth(10);

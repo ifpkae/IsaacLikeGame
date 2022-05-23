@@ -6,28 +6,33 @@ import Shoot from "./Shoot.js";
 
 import LifeBehaviour from "./LifeBehaviour.js";
 import PathFinding from "./PathFinding.js";
+
 import MovementBehaviour from "./MovementBehaviour.js";
 import Stats from "./StatsBehaviour.js";
 
-export default class IsaacScene extends Phaser.Scene {
 
+
+
+
+
+export default class Lvl2Scene extends Phaser.Scene {
+	
 	constructor() {
-        super({key: "IsaacScene"});
+        super({key: "Lvl2Scene"});
     }
 
 	preload() {
-		this.load.image("tiles", "../assets/tilesets/146176.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemap.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMesh.json");
+		this.load.image("tiles", "../assets/tilesets/tilesetEric.png");
+		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapEric.json");
+		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshEric.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
-		
 		
 	}
   
 	create() {
+		
 		console.log(this)
-
 		const map = this.make.tilemap({ key: "map" });
 
 		const tileset = map.addTilesetImage("tilemap", "tiles");
@@ -45,7 +50,6 @@ export default class IsaacScene extends Phaser.Scene {
 		this.TilePosX=0;
 		this.TilePosY=0;
 		this.tileHeight=this.mapMesh.tileheight
-		
 		///Initializa array
 		for(this.x=0; this.x<this.MapArrayWidth; this.x++){
 			this.MapArrayInfo[this.x]=[]
@@ -80,14 +84,15 @@ export default class IsaacScene extends Phaser.Scene {
 			for(this.x=0; this.x<this.MapArrayWidth; this.x++){
 				this.text+=this.MapArrayInfo[this.x][this.y]
 				this.num++;
-			}
-			console.log(this.text)
+			}	
 			
 		}
 	
 //////////////////
 		this.wallsLayer.setCollisionByProperty({ collides: true });
+		
 		this.doorLayer.setCollisionByProperty({ collides: true });
+	
 		const spawnPoint = map.findObject("Objects", (obj) => obj.name === "Spawn Point");
 
 		this.PlayerGroup = this.physics.add.group();
@@ -139,6 +144,7 @@ export default class IsaacScene extends Phaser.Scene {
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
 				
+				
 			}
 			else{
 				break;
@@ -154,7 +160,9 @@ export default class IsaacScene extends Phaser.Scene {
 
 		this.physics.add.overlap(this.doorLayer, this.PlayerGroup, this.ChangeScene, null, this);
 
+
 		this.physics.world.addCollider(this.PlayerGroup, this.wallsLayer);
+
 	
 		this.physics.world.addCollider(this.EnemyList, this.EnemyList);
 		
@@ -229,7 +237,6 @@ export default class IsaacScene extends Phaser.Scene {
 	UpdateEnemies(enemy){
 		if(enemy.AI.ReturnDelay()<enemy.AI.ReturnTimer()){
 			enemy.AI.ReCalculate()
-
 		}
 		
 		enemy.move.Move(enemy.AI.ReturnDirection());
@@ -244,7 +251,6 @@ export default class IsaacScene extends Phaser.Scene {
 				this.physics.world.addCollider(bullet, this.player.sprite);
 				this.physics.world.addCollider(bullet, this.wallsLayer);
 				enemy.Shooter.ResetTimer()
-		
 			}
 			
 		}
@@ -289,7 +295,9 @@ export default class IsaacScene extends Phaser.Scene {
 	ChangeScene(player,wall){
 	
 		if(wall.collides){
-			this.scene.start('Lvl2Scene');
+			
+			this.scene.start("IsaacScene");
+		
 		}
 	}
 
