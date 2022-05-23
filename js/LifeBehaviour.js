@@ -1,3 +1,5 @@
+//import eventsCenter from "./EventsCenter.js"
+
 export default class LifeBehaviour {
    
 	constructor(scene,player, actualHp, maxHp) {
@@ -20,6 +22,7 @@ export default class LifeBehaviour {
 
     DecreaseHp(value){
         this.actualHp-=value;
+        eventsCenter.emit('update-Life', this.actualHp)
         if(this.actualHp<=0){
             this.actualHp=0;
             this.player.destroy();

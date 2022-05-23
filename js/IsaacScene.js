@@ -26,6 +26,10 @@ export default class IsaacScene extends Phaser.Scene {
 
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
+
+		//Show UI
+		this.scene.run('ui')
+
 ///////////////////
 		
 		this.mapMesh = this.cache.json.get('mapMesh');
