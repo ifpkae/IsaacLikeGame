@@ -1,4 +1,4 @@
-//import eventsCenter from "./EventsCenter.js"
+import eventsCenter from "./EventsCenter.js"
 
 export default class LifeBehaviour {
    

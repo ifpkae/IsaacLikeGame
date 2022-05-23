@@ -101,7 +101,6 @@ export default class PathFinding {
         this.Ox=Phaser.Math.RoundTo(this.Follow.x/this.TileSize, 0) 
         this.Oy=Phaser.Math.RoundTo(this.Follow.y/this.TileSize, 0)
         
-        console.log(this.ObjectGot)
         if(!isNaN(this.Px)){
             this.start= this.graph.grid[this.Px][this.Py];
             if(!isNaN(this.Ox)){

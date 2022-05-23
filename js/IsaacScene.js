@@ -27,8 +27,7 @@ export default class IsaacScene extends Phaser.Scene {
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 
-		//Show UI
-		this.scene.run('ui')
+
 
 ///////////////////
 		
@@ -76,7 +75,6 @@ export default class IsaacScene extends Phaser.Scene {
 				this.text+=this.MapArrayInfo[this.x][this.y]
 				this.num++;
 			}
-			console.log(this.text)
 			
 		}
 	
@@ -95,7 +93,7 @@ export default class IsaacScene extends Phaser.Scene {
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y,300);
 		
 		this.player.Shooter= new Shoot(this, 0.3, 2, 600, undefined);
-		this.player.sprite.life = new LifeBehaviour(this, this.player, 10,10);
+		this.player.sprite.life = new LifeBehaviour(this, this.player, 5,5);
 
 		this.PlayerGroup.add(this.player.sprite)
 		for (this.num=0; this.num != -1; this.num++){
@@ -163,6 +161,9 @@ export default class IsaacScene extends Phaser.Scene {
 		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 		this.timer=0;
+
+		//Show UI
+		this.scene.run('UICanvas')
 		
 	}
   
@@ -215,7 +216,6 @@ export default class IsaacScene extends Phaser.Scene {
 	UpdateEnemies(enemy){
 		if(enemy.AI.ReturnDelay()<enemy.AI.ReturnTimer()){
 			enemy.AI.ReCalculate()
-			console.log("ds")
 		}
 		
 		enemy.move.Move(enemy.AI.ReturnDirection());
@@ -230,7 +230,6 @@ export default class IsaacScene extends Phaser.Scene {
 				this.physics.world.addCollider(bullet, this.player.sprite);
 				this.physics.world.addCollider(bullet, this.wallsLayer);
 				enemy.Shooter.ResetTimer()
-				console.log("Shoot")
 			}
 			
 		}

@@ -1,10 +1,10 @@
-import Phaser from 'phaser'
+import eventsCenter from "./EventsCenter"
 
-export default class UI extends Phaser.Scene
+export default class UIScene extends Phaser.Scene
 {
     constructor()
     {
-        super('ui-scene')
+        super('ui-canvas')
     }
 
     create()
@@ -13,11 +13,18 @@ export default class UI extends Phaser.Scene
         {
             fontSize: 32
         })
+
+        eventsCenter.on('update-Life', this.updateLife, this)
+
+        this.events.on(Phaser.scenes.Events.SHUTDOWN, () =>{
+            eventsCenter.off('update-Life', this,this.updateLife,this)
+        })
     }
 
-    updateLife(count)
+    updateLife(amount)
     {
-        this.label.text = 'Health: ${count}'
+        console.log(amount)
+        this.label.text = 'Health: ${amount}'
     }
 
 }
