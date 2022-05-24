@@ -1,5 +1,3 @@
-import eventsCenter from "./EventsCenter"
-
 export default class UIScene extends Phaser.Scene
 {
     constructor()
