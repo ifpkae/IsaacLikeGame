@@ -1,7 +1,7 @@
 import MovementBehaviour from "./MovementBehaviour.js";
 
 export default class Player {
-	constructor(scene, x, y, speed) {
+	constructor(scene, x, y) {
 		this.scene = scene;
 		this.Dead=false;
 		var HeadRecoverTimePassed;
@@ -9,7 +9,7 @@ export default class Player {
 		var LastDir;
 		this.LastDir=4
 		var ShootDir;
-		this.speed=speed;
+	
 		var vector 
 		
        
@@ -41,8 +41,7 @@ export default class Player {
 		
 		
 		
-		this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12);
-		this.sprite.move=new MovementBehaviour(this.scene, this.sprite, this.speed)
+		this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12)
 
 		this.sprite.head = scene.physics.add.sprite(x, y, "IsaacAtlas", "FrontFaceNormal").setSize(40, 40).setOffset(12, 12);
 		this.sprite.head.setDepth(10);
@@ -97,7 +96,7 @@ export default class Player {
 			head.y=player.body.y ;
 			
 			// Normalize and scale the velocity so that player can't move faster along a diagonal
-			player.body.velocity.normalize().scale(this.speed);
+			player.body.velocity.normalize().scale(this.sprite.stats.ReturnSpeed());
 
 			if (keys.a.isDown) {
 				player.anims.play("SideMove", true);

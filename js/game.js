@@ -3,7 +3,7 @@ import IsaacScene from "./IsaacScene.js";
 import Lvl2Scene from "./Lvl2Scene.js";
 var Lvl1 = new IsaacScene()
 var Lvl2 = new Lvl2Scene()
-console.log(Lvl1)
+
 var DEFAULT_HEIGHT = 14*52
 var DEFAULT_WIDTH = 28*52
 const config = {
@@ -13,7 +13,7 @@ const config = {
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
 	parent: "game-container",
-	scene: [Lvl2,Lvl1],
+	scene: [Lvl1,Lvl2],
 	physics: {
 		default: "arcade",
 		arcade: {

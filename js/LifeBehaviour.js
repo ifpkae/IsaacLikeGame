@@ -10,8 +10,12 @@ export default class LifeBehaviour {
         
 	}
 
+    ReturnMaxHp(){
+        return this.player.sprite.stats.ReturnLife();
+    }
+
     ReturnHp(){
-        return this.player.stats.ReturnLife()
+        return this.hp
     }
 
     DecreaseHp(value){
@@ -24,8 +28,27 @@ export default class LifeBehaviour {
         }
         
     }
+
+    Check(){
+        if(this.hp>this.player.sprite.stats.ReturnLife()){
+            this.hp=this.player.sprite.stats.ReturnLife();
+        }
+        if(this.hp<=0){
+            this.hp=0;
+            this.player.destroy();
+            
+        }
+    }
+
+    SetToMax(){
+        this.hp=this.player.sprite.stats.ReturnLife();
+    }
     IncreaseHp(value){
 
         this.hp+=value;
+        if(this.hp>this.player.sprite.stats.ReturnLife()){
+            this.hp=this.player.sprite.stats.ReturnLife();
+        }
+
     }
 }

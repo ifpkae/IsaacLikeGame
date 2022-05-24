@@ -1,28 +1,51 @@
 export default class UIScene extends Phaser.Scene
 {
-    constructor()
+    constructor(scene,player)
     {
-        super('ui-canvas')
+        super()
+        this.scene = scene;
+        this.player = player;
+        var textLife;
+        var textDmg;
+        var textSpeed;
     }
 
-    create()
+    showLife()
     {
-        this.label = this.add.text(10,10,'Health: 5',
-        {
-            fontSize: 32
-        })
-
-        eventsCenter.on('update-Life', this.updateLife, this)
-
-        this.events.on(Phaser.scenes.Events.SHUTDOWN, () =>{
-            eventsCenter.off('update-Life', this,this.updateLife,this)
-        })
+   
+        this.textLife=this.scene.add.text(100,100,'Health: '+ this.player.life.ReturnHp()+'/'+this.player.life.ReturnMaxHp(),{ fontSize: 32})
     }
 
-    updateLife(amount)
+    updateLife()
     {
-        console.log(amount)
-        this.label.text = 'Health: ${amount}'
+        
+        this.textLife.setText('Health: '+ this.player.life.ReturnHp()+'/'+this.player.life.ReturnMaxHp())
+        //this.label.text = 'Health: ${amount}'
     }
+    showDmg()
+    {
+
+        this.textDmg=this.scene.add.text(100,150,'Dmg: '+ this.player.stats.ReturnDmg(),{ fontSize: 32})
+    }
+
+    updateDmg()
+    {
+        
+        this.textDmg.setText('Dmg: '+ this.player.stats.ReturnDmg())
+        //this.label.text = 'Health: ${amount}'
+    }
+    showSpeed()
+    {
+
+        this.textSpeed=this.scene.add.text(100,200,'Speed: '+ this.player.stats.ReturnSpeed(),{ fontSize: 32})
+    }
+
+    updateSpeed()
+    {
+        
+        this.textSpeed.setText('Speed: '+ this.player.stats.ReturnSpeed())
+        //this.label.text = 'Health: ${amount}'
+    }
+
 
 }

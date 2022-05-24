@@ -9,8 +9,9 @@ import PathFinding from "./PathFinding.js";
 
 import MovementBehaviour from "./MovementBehaviour.js";
 import Stats from "./StatsBehaviour.js";
+import Item from "./Item.js";
 
-
+import UIScene from "./UI.js";
 
 
 
@@ -22,6 +23,7 @@ export default class Lvl2Scene extends Phaser.Scene {
     }
 
 	preload() {
+		
 		this.load.image("tiles", "../assets/tilesets/tilesetEric.png");
 		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapEric.json");
 		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshEric.json");
@@ -31,8 +33,8 @@ export default class Lvl2Scene extends Phaser.Scene {
 	}
   
 	create() {
-		
-		console.log(this)
+	
+
 		const map = this.make.tilemap({ key: "map" });
 
 		const tileset = map.addTilesetImage("tilemap", "tiles");
@@ -95,6 +97,9 @@ export default class Lvl2Scene extends Phaser.Scene {
 	
 		const spawnPoint = map.findObject("Objects", (obj) => obj.name === "Spawn Point");
 
+		/*this.UI = new UIScene(this,this.player);
+		this.UI.showLife();*/
+
 		this.PlayerGroup = this.physics.add.group();
 
 		this.BulletList = this.physics.add.group();
@@ -102,11 +107,19 @@ export default class Lvl2Scene extends Phaser.Scene {
 		this.EnemyList = this.physics.add.group();
 		this.EnemyBulletList = this.physics.add.group();
 		
-		this.player = new Player(this, spawnPoint.x, spawnPoint.y,300);
-		this.player.sprite.stats = new Stats(this, this.player.sprite, 600,2,5,0.3)
+		this.ItemList = this.physics.add.group();
+		
+
+		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
 		this.player.Shooter= new Shoot(this,this.player.sprite, undefined);
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
+
+		this.item= new Item(this,this.player.sprite.x+50,this.player.sprite.y, 4,200,4,0)
+		
+		this.ItemList.add(this.item.sprite)
+		this.item.sprite.dataItem=this.item;
 
 		this.PlayerGroup.add(this.player.sprite)
 		for (this.num=0; this.num != -1; this.num++){
@@ -135,9 +148,9 @@ export default class Lvl2Scene extends Phaser.Scene {
 						this.BulletDmg=map.objects[1].objects[this.num].properties[this.num2].value
 					}
 				}
-
+				console.log(this.Speed)
 				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player);
-				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, 150,this.BulletDmg,this.Life,this.ShootDelay)
+				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
 				this.EnemyList.add(this.enemy.sprite);
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
 				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite);
@@ -159,6 +172,8 @@ export default class Lvl2Scene extends Phaser.Scene {
 		this.physics.add.overlap(this.EnemyBulletList, this.PlayerGroup, this.hitPlayer, null, this);
 
 		this.physics.add.overlap(this.doorLayer, this.PlayerGroup, this.ChangeScene, null, this);
+
+		this.physics.add.overlap(this.ItemList, this.PlayerGroup, this.PickItem, null, this);
 
 
 		this.physics.world.addCollider(this.PlayerGroup, this.wallsLayer);
@@ -185,11 +200,10 @@ export default class Lvl2Scene extends Phaser.Scene {
 		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 		this.timer=0;
-		
 	}
   
 	update(time, delta) {
-
+		
 		this.timer += (1*delta)/1000;
 		// Allow the player to respond to key presses and move itself
 		this.player.update(time,delta);
@@ -299,6 +313,20 @@ export default class Lvl2Scene extends Phaser.Scene {
 			this.scene.start("IsaacScene");
 		
 		}
+	}
+
+	PickItem(item,player){
+		
+		console.log(player.stats)
+		if(item.scene==this){
+			
+			item.dataItem.Apply(player)
+			this.ItemList.remove(item);
+			item.destroy();
+			console.log(player.stats)
+			player.life.SetToMax()
+		}
+		
 	}
 
 	ReturnMapSizeX(){

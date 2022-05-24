@@ -19,6 +19,7 @@ export default class Stats {
     }
     AddSpeed(increment){
         this.Speed +=increment
+        console.log(this.Speed)
     }
     AddLife(increment){
         this.Life +=increment
@@ -27,15 +28,7 @@ export default class Stats {
         this.DelayShoot +=increment
     }
 
-    ReduceDmg(increment){
-        this.Dmg -=increment
-    }
-    ReduceSpeed(increment){
-        this.Speed -=increment
-    }
-    ReduceDelay(increment){
-        this.DelayShoot -=increment
-    }
+    
 
     ReturnDmg(){
         return this.Dmg

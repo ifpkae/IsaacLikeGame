@@ -16,7 +16,7 @@ export default class MovementBehaviour {
     }
 
     Move(dir){
-        
+
         this.ObjectGot.body.setVelocityX(dir.x*this.ObjectGot.stats.ReturnSpeed());
         this.ObjectGot.body.setVelocityY(dir.y*this.ObjectGot.stats.ReturnSpeed());
     }
