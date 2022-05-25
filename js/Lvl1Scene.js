@@ -33,6 +33,11 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
 		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
+		this.load.audio("PlayerShot", "../assets/audios/IsaacShoot.mp3");
+		this.load.audio("PlayerShotExplosion", "../assets/audios/IsaacShootExplosion.mp3");
+		this.load.audio("AdriaEnemyShot", "../assets/audios/IzazelShoot.mp3");
+		this.load.audio("KelsonEnemyShot", "../assets/audios/ChubberShoot.mp3");
+		this.load.audio("EricEnemyShot", "../assets/audios/BoneyShoot.mp3");
 		this.load.audio("Song", "../assets/audios/song.mp3");
 
 		this.load.image('heart', './assets/Images/heart_full.png');
@@ -48,6 +53,10 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.killPlayer = this.sound.add('KillPlayer',{loop: false});
 		this.song = this.sound.add('Song', {loop: false, volume: 0.05});
 		this.song.play();
+
+		this.player.shoot.sound = this.sound.add('PlayerShot', {loop: false});
+		this.player.shootExplosion.sound = this.sound.add('PlayerShotExplosion', {loop: false});
+
 
 		const map = this.make.tilemap({ key: "map" });
 
