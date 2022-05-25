@@ -25,8 +25,9 @@ export default class LifeBehaviour {
             this.hp=0;
             this.player.destroy();
             
+            return true;
         }
-        
+        return false;
     }
 
     Check(){
@@ -37,7 +38,10 @@ export default class LifeBehaviour {
             this.hp=0;
             this.player.destroy();
             
+            return true;
+    
         }
+        return false;
     }
 
     SetToMax(){

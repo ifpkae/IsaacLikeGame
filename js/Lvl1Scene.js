@@ -23,15 +23,13 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapAdria.json");
 		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshAdria.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
+		this.load.atlas("ItemsAtlas", "../assets/atlas/ItemsAtlasImg.png", "../assets/atlas/ItemsAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
 		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
 		this.load.audio("Song", "../assets/audios/song.mp3");
 		
 		this.load.image('heart', './assets/Images/heart_full.png');
-		this.load.image('damageImage', './assets/Images/damage.png');
-		this.load.image('speedImage', './assets/Images/speed.png');
-
 	}
   
 	create() {
@@ -117,16 +115,10 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
-		this.UI = new UIScene(this,this.player.sprite,'heart', 'damageImage', 'speedImage');
+		this.UI = new UIScene(this,this.player.sprite,'heart');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();
-	
-
-		this.item= new Item(this,500,this.player.sprite.y, 4,200,4,0)
-		
-		this.ItemList.add(this.item.sprite)
-		this.item.sprite.dataItem=this.item;
 
 		this.PlayerGroup.add(this.player.sprite)
 		for (this.num=0; this.num != -1; this.num++){
@@ -212,9 +204,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 				
 			}
 		}
-		if(this.player.Dead){
-			this.scene.restart();
-		}
+		
 		Phaser.Actions.Call(this.BulletList.getChildren(), this.MoveBullet);
 		Phaser.Actions.Call(this.EnemyBulletList.getChildren(), this.MoveBullet);
 
@@ -283,7 +273,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 	hitEnemy(bullet, enemy){
 
 		if(bullet.scene==this){
-			enemy.life.DecreaseHp(bullet.dmg);
+			if(enemy.life.DecreaseHp(bullet.dmg)){
+				this.DropItem(enemy);
+			}
 			this.BulletList.remove(bullet);
 			bullet.destroy();
 		}
@@ -292,7 +284,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 	hitPlayer(bullet, player){
 
 		if(bullet.scene==this){
-			player.life.DecreaseHp(bullet.dmg);
+			if(player.life.DecreaseHp(bullet.dmg)){
+				this.scene.restart();
+			}
 			this.BulletList.remove(bullet);
 			bullet.destroy();
 			this.UI.updateLife();
@@ -326,6 +320,21 @@ export default class Lvl1Scene extends Phaser.Scene {
 		
 	}
 
+	DropItem(enemy){
+		//dmg -0.2 - 1 //speed -50 - 50 // vida -1 o +1 // delay -0.05 - 0.1
+		this.getRandomFloat(0.1,0.2,1);
+		if(0.1){
+			var health = 1;
+		}
+		else{
+			var health = -1;
+		}
+		console.log(health);
+		this.item= new Item(this,enemy.x,enemy.y,this.getRandomFloat(-0.2,1,1),this.getRandomFloat(-50,50,0),health,this.getRandomFloat(-0.05,0.1,2),this.getRandomFloat(1,10,0));
+		this.ItemList.add(this.item.sprite)
+		this.item.sprite.dataItem=this.item;
+	}
+
 	ReturnMapSizeX(){
 		this.map.widthInPixels;
 	}
@@ -333,7 +342,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.map.heightInPixels;
 	}
 
-	SetLevel(numLvl){
-		
+	getRandomFloat(min, max, decimals) {
+		const str = (Math.random() * (max - min) + min).toFixed(decimals);
+	  
+		return parseFloat(str);
 	}
   }

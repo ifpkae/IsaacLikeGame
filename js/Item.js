@@ -1,7 +1,7 @@
 
 
 export default class Item {
-	constructor(scene, x,y, dmgIncrement,speedIncrement,lifeIncrement,delayIncrement) {
+	constructor(scene, x,y, dmgIncrement,speedIncrement,lifeIncrement,delayIncrement,spriteNames) {
 		this.scene = scene;
 		this.Speed=speedIncrement;
         this.Dmg=dmgIncrement;
@@ -9,8 +9,9 @@ export default class Item {
         this.DelayShoot = delayIncrement;
         this.x=x
         this.y=y
+        var spriteName = spriteNames + "";
         
-        this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12);
+        this.sprite = scene.physics.add.sprite(x, y, "ItemsAtlas", spriteName).setSize(40, 40).setOffset(12, 12);
 	}
 
 	Apply(obj){
