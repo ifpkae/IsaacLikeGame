@@ -29,6 +29,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.load.audio("Song", "../assets/audios/song.mp3");
 		
 		this.load.image('heart', './assets/Images/heart_full.png');
+		this.load.image('damageImage', './assets/Images/damage.png');
+		this.load.image('speedImage', './assets/Images/speed.png');
+
 	}
   
 	create() {
@@ -114,7 +117,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
-		this.UI = new UIScene(this,this.player.sprite,'heart');
+		this.UI = new UIScene(this,this.player.sprite,'heart', 'damageImage', 'speedImage');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();

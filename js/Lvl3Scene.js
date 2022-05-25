@@ -99,9 +99,6 @@ export default class Lvl3Scene extends Phaser.Scene {
 	
 		const spawnPoint = map.findObject("Objects", (obj) => obj.name === "Spawn Point");
 
-		/*this.UI = new UIScene(this,this.player);
-		this.UI.showLife();*/
-
 		this.PlayerGroup = this.physics.add.group();
 
 		this.BulletList = this.physics.add.group();
@@ -118,7 +115,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
-		this.UI = new UIScene(this,this.player.sprite,'heart');
+		this.UI = new UIScene(this,this.player.sprite,'heart', 'damageImage', 'speedImage');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();
