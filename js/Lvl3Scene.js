@@ -38,6 +38,12 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
 		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
 		this.load.audio("Song", "../assets/audios/song.mp3");
+		this.load.audio("PlayerShot", "../assets/audios/IsaacShoot.mp3");
+		this.load.audio("PlayerShotExplosion", "../assets/audios/IsaacShootExplosion.mp3");
+		this.load.audio("AdriaEnemyShot", "../assets/audios/IzazelShoot.mp3");
+		this.load.audio("KelsonEnemyShot", "../assets/audios/ChubberShoot.mp3");
+		this.load.audio("EricEnemyShot", "../assets/audios/BoneyShoot.mp3");
+		this.load.audio("EnemyDieSound", "../assets/audios/DieEnemy.mp3")
 		
 		this.load.image('heart', './assets/Images/heart_full.png');
 		this.load.image('damageImage', './assets/Images/damage.png');
@@ -55,6 +61,18 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 		this.doorLayer = map.createLayer("Door", tileset, 0, 0);
 		this.closeDoorLayer = map.createLayer("CloseDoor", tileset, 0, 0);
+
+		
+		this.hit = this.sound.add('HitPlayer', {loop: false});
+		this.killPlayer = this.sound.add('KillPlayer',{loop: false});
+		this.playerShotSound = this.sound.add('PlayerShot',{loop: false});
+		this.playerShotExplosionSound = this.sound.add('PlayerShotExplosion',{loop: false});
+		this.AdriaEnemyShotSound = this.sound.add('AdriaEnemyShot',{loop: false});
+		this.KelsonEnemyShotSound = this.sound.add('KelsonEnemyShot',{loop: false});
+		this.EricEnemyShotSound = this.sound.add('EricEnemyShot',{loop: false});
+		this.DieEnemySound = this.sound.add("EnemyDieSound", {loop: false})
+		this.song = this.sound.add('Song', {loop: false, volume: 0.05});
+		this.song.play();
 ///////////////////
 		
 		this.mapMesh = this.cache.json.get('mapMesh3');
@@ -213,6 +231,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 				const bullet = this.player.Shooter.Shoot(directionShoot,this.player.ReturnPosX(), this.player.ReturnPosY());
 				if(bullet!=undefined){
 					this.BulletList.add(bullet);
+					this.playerShotSound.play();
 					this.physics.world.addCollider(bullet, this.EnemyList);
 					this.physics.world.addCollider(bullet, this.wallsLayer);
 					this.timer=0;
@@ -261,6 +280,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 			const bullet = enemy.Shooter.Shoot(3, enemy.x, enemy.y);
 			if(bullet!=undefined){
 				this.EnemyBulletList.add(bullet);
+				this.KelsonEnemyShotSound.play();
 				this.physics.world.addCollider(bullet, this.player.sprite);
 				this.physics.world.addCollider(bullet, this.wallsLayer);
 				enemy.Shooter.ResetTimer()
@@ -274,6 +294,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		
 		if(wall.collides && bullet.scene==this){
 			this.BulletList.remove(bullet);
+			this.playerShotExplosionSound.play();
 			bullet.destroy();	
 		}
 	}
@@ -292,6 +313,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		if(bullet.scene==this){
 			if(enemy.life.DecreaseHp(bullet.dmg)){
 				totalEnemies--;
+				this.DieEnemySound.play();
 				this.DropItem(enemy);
 				this.CheckDoor();
 			}
