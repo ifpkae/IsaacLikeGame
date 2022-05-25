@@ -1,10 +1,10 @@
 import Bullet from "./Bullet.js";
 
 export default class Shoot {
-	constructor(scene,actual,objective) {
+	constructor(scene,actual,objective,bulletName) {
 		this.scene = scene;
         this.player=actual;
-
+        
         var timer=0
         this.timer=0
 
@@ -12,6 +12,8 @@ export default class Shoot {
 
         this.d =null;
         this.BulletSpeed=600;
+
+        this.bulletType = bulletName;
 	}
 	
 	
@@ -27,7 +29,7 @@ export default class Shoot {
 
     Shoot(dir,x,y){
         if(this.objective==undefined){
-            this.d = new Bullet(this.scene,x,y,this.BulletSpeed,dir,this.player.stats.ReturnDmg());
+            this.d = new Bullet(this.scene,x,y,this.BulletSpeed,dir,this.player.stats.ReturnDmg(),this.bulletType);
             return this.d.ReturnBullet();
         }
         else{
@@ -43,7 +45,7 @@ export default class Shoot {
                 this.vector=new Phaser.Math.Vector2(this.objective.x-x, this.objective.y-y);
                 this.vector.normalize()
                 
-                this.d = new Bullet(this.scene,x,y,this.BulletSpeed,this.vector,this.player.stats.ReturnDmg());
+                this.d = new Bullet(this.scene,x,y,this.BulletSpeed,this.vector,this.player.stats.ReturnDmg(),this.bulletType);
                 return this.d.ReturnBullet();
             }
             

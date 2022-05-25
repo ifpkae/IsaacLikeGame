@@ -6,24 +6,22 @@ import Shoot from "./Shoot.js";
 
 import LifeBehaviour from "./LifeBehaviour.js";
 import PathFinding from "./PathFinding.js";
-
 import MovementBehaviour from "./MovementBehaviour.js";
 import Stats from "./StatsBehaviour.js";
 import Item from "./Item.js";
 
 import UIScene from "./UI.js";
 
-export default class Lvl2Scene extends Phaser.Scene {
-	
+export default class Lvl1Scene extends Phaser.Scene {
+
 	constructor() {
-        super({key: "Lvl2Scene"});
+        super({key: "Lvl1Scene"});
     }
 
 	preload() {
-		
-		this.load.image("tiles", "../assets/tilesets/tilesetEric.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapEric.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshEric.json");
+		this.load.image("tiles", "../assets/tilesets/146176.png");
+		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemap.json");
+		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMesh.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
@@ -57,6 +55,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 		this.TilePosX=0;
 		this.TilePosY=0;
 		this.tileHeight=this.mapMesh.tileheight
+		
 		///Initializa array
 		for(this.x=0; this.x<this.MapArrayWidth; this.x++){
 			this.MapArrayInfo[this.x]=[]
@@ -91,8 +90,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 			for(this.x=0; this.x<this.MapArrayWidth; this.x++){
 				this.text+=this.MapArrayInfo[this.x][this.y]
 				this.num++;
-			}	
-			
+			}			
 		}
 	
 //////////////////
@@ -106,22 +104,23 @@ export default class Lvl2Scene extends Phaser.Scene {
 
 		this.EnemyList = this.physics.add.group();
 		this.EnemyBulletList = this.physics.add.group();
-		
+
 		this.ItemList = this.physics.add.group();
 		
 
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
 		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
-		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
+		this.player.Shooter= new Shoot(this,this.player.sprite, undefined);
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
 		this.UI = new UIScene(this,this.player.sprite,'heart');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();
+	
 
-		this.item= new Item(this,this.player.sprite.x+50,this.player.sprite.y, 4,200,4,0)
+		this.item= new Item(this,500,this.player.sprite.y, 4,200,4,0)
 		
 		this.ItemList.add(this.item.sprite)
 		this.item.sprite.dataItem=this.item;
@@ -153,16 +152,15 @@ export default class Lvl2Scene extends Phaser.Scene {
 						this.BulletDmg=map.objects[1].objects[this.num].properties[this.num2].value
 					}
 				}
+
 				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player);
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
-				
-				this.EnemyList.add(this.enemy.sprite);
+	
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
-				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite, "EnemyBullet");
+				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite);
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
-				
-				
+				this.EnemyList.add(this.enemy.sprite);
 			}
 			else{
 				break;
@@ -180,9 +178,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 
 		this.physics.add.overlap(this.ItemList, this.PlayerGroup, this.PickItem, null, this);
 
-
 		this.physics.world.addCollider(this.PlayerGroup, this.wallsLayer);
-
 	
 		this.physics.world.addCollider(this.EnemyList, this.EnemyList);
 		
@@ -191,10 +187,11 @@ export default class Lvl2Scene extends Phaser.Scene {
 		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 		this.timer=0;
+
 	}
   
 	update(time, delta) {
-		
+	
 		this.timer += (1*delta)/1000;
 		// Allow the player to respond to key presses and move itself
 		this.player.update(time,delta);
@@ -213,8 +210,6 @@ export default class Lvl2Scene extends Phaser.Scene {
 			}
 		}
 		if(this.player.Dead){
-			this.song.stop();
-			this.killPlayer.play();
 			this.scene.restart();
 		}
 		Phaser.Actions.Call(this.BulletList.getChildren(), this.MoveBullet);
@@ -244,6 +239,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 	UpdateEnemies(enemy){
 		if(enemy.AI.ReturnDelay()<enemy.AI.ReturnTimer()){
 			enemy.AI.ReCalculate()
+
 		}
 		
 		enemy.move.Move(enemy.AI.ReturnDirection());
@@ -258,6 +254,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 				this.physics.world.addCollider(bullet, this.player.sprite);
 				this.physics.world.addCollider(bullet, this.wallsLayer);
 				enemy.Shooter.ResetTimer()
+		
 			}
 			
 		}
@@ -292,7 +289,6 @@ export default class Lvl2Scene extends Phaser.Scene {
 	hitPlayer(bullet, player){
 
 		if(bullet.scene==this){
-			this.hit.play();
 			player.life.DecreaseHp(bullet.dmg);
 			this.BulletList.remove(bullet);
 			bullet.destroy();
@@ -304,11 +300,10 @@ export default class Lvl2Scene extends Phaser.Scene {
 	ChangeScene(player,wall){
 	
 		if(wall.collides){
-			
-			this.scene.start("IsaacScene");
-		
+			this.scene.start('Lvl2Scene');
 		}
 	}
+
 
 	PickItem(item,player){
 		

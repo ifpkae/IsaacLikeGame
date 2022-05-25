@@ -13,32 +13,29 @@ import Item from "./Item.js";
 
 import UIScene from "./UI.js";
 
-export default class Lvl2Scene extends Phaser.Scene {
+
+
+
+export default class Lvl3Scene extends Phaser.Scene {
 	
 	constructor() {
-        super({key: "Lvl2Scene"});
+        super({key: "Lvl3Scene"});
     }
 
 	preload() {
 		
-		this.load.image("tiles", "../assets/tilesets/tilesetEric.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapEric.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshEric.json");
+		this.load.image("tiles", "../assets/tilesets/tilesetKelson.png");
+		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapKelson.json");
+		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshKelson.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
-		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
-		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
-		this.load.audio("Song", "../assets/audios/song.mp3");
 		
+
 		this.load.image('heart', './assets/Images/heart_full.png');
 	}
   
 	create() {
-		
-		this.hit = this.sound.add('HitPlayer', {loop: false});
-		this.killPlayer = this.sound.add('KillPlayer',{loop: false});
-		this.song = this.sound.add('Song', {loop: false, volume: 0.05});
-		this.song.play();
+	
 
 		const map = this.make.tilemap({ key: "map" });
 
@@ -97,8 +94,13 @@ export default class Lvl2Scene extends Phaser.Scene {
 	
 //////////////////
 		this.wallsLayer.setCollisionByProperty({ collides: true });
+		
 		this.doorLayer.setCollisionByProperty({ collides: true });
+	
 		const spawnPoint = map.findObject("Objects", (obj) => obj.name === "Spawn Point");
+
+		/*this.UI = new UIScene(this,this.player);
+		this.UI.showLife();*/
 
 		this.PlayerGroup = this.physics.add.group();
 
@@ -113,7 +115,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
 		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
-		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
+		this.player.Shooter= new Shoot(this,this.player.sprite, undefined);
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
 		this.UI = new UIScene(this,this.player.sprite,'heart');
@@ -153,12 +155,12 @@ export default class Lvl2Scene extends Phaser.Scene {
 						this.BulletDmg=map.objects[1].objects[this.num].properties[this.num2].value
 					}
 				}
+				console.log(this.Speed)
 				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player);
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
-				
 				this.EnemyList.add(this.enemy.sprite);
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
-				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite, "EnemyBullet");
+				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite);
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
 				
@@ -213,8 +215,6 @@ export default class Lvl2Scene extends Phaser.Scene {
 			}
 		}
 		if(this.player.Dead){
-			this.song.stop();
-			this.killPlayer.play();
 			this.scene.restart();
 		}
 		Phaser.Actions.Call(this.BulletList.getChildren(), this.MoveBullet);
@@ -292,7 +292,6 @@ export default class Lvl2Scene extends Phaser.Scene {
 	hitPlayer(bullet, player){
 
 		if(bullet.scene==this){
-			this.hit.play();
 			player.life.DecreaseHp(bullet.dmg);
 			this.BulletList.remove(bullet);
 			bullet.destroy();

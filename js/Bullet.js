@@ -3,12 +3,12 @@ import MovementBehaviour from "./MovementBehaviour.js";
 
 export default class Bullet {
    
-	constructor(scene, x,y, speed, direction, dmg) {
+	constructor(scene, x,y, speed, direction, dmg, bulletName) {
         
 		this.scene = scene;
         this.speed=speed;
         this.dir=direction
-        this.bullet = scene.physics.add.sprite(x,y, "BulletAtlas","Bullet").setSize(20, 20).setOffset(22, 22);
+        this.bullet = scene.physics.add.sprite(x,y, "BulletAtlas", bulletName).setSize(20, 20).setOffset(6, 6);
         this.bullet.setDepth(10);
 		this.bullet.x=x;
         this.bullet.y=y;
