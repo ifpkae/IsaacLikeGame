@@ -2,6 +2,7 @@
 import Lvl1Scene from "./Lvl1Scene.js";
 import Lvl2Scene from "./Lvl2Scene.js";
 import Lvl3Scene from "./Lvl3Scene.js";
+import MainMenu from "./MainMenu.js";
 
 import MainController from "./MainController.js";
 
@@ -10,6 +11,7 @@ var player;
 var main;
 main=new MainController(player)
 
+var mainMenu = new MainMenu()
 var Lvl1 = new Lvl1Scene(main)
 var Lvl2 = new Lvl2Scene(main)
 var Lvl3 = new Lvl3Scene(main)
@@ -24,6 +26,7 @@ const config = {
     height: DEFAULT_HEIGHT,
 	parent: "game-container",
 	scene: [
+		mainMenu,
 		Lvl1,
 		Lvl2,
 		Lvl3
