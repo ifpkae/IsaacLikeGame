@@ -21,9 +21,9 @@ export default class Lvl2Scene extends Phaser.Scene {
 
 	preload() {
 		
-		this.load.image("tiles", "../assets/tilesets/tilesetEric.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapEric.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshEric.json");
+		this.load.image("tiles2", "../assets/tilesets/tilesetEric.png");
+		this.load.tilemapTiledJSON("map2", "../assets/tilemaps/tilemapEric.json");
+		this.load.json("mapMesh2", "../assets/tilemaps/tilemapMapMeshEric.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
@@ -40,16 +40,16 @@ export default class Lvl2Scene extends Phaser.Scene {
 		this.song = this.sound.add('Song', {loop: false, volume: 0.05});
 		this.song.play();
 
-		const map = this.make.tilemap({ key: "map" });
+		const map = this.make.tilemap({ key: "map2" });
 
-		const tileset = map.addTilesetImage("tilemap", "tiles");
+		const tileset = map.addTilesetImage("tilemap", "tiles2");
 
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 		this.doorLayer = map.createLayer("Door", tileset, 0, 0);
 ///////////////////
 		
-		this.mapMesh = this.cache.json.get('mapMesh');
+		this.mapMesh = this.cache.json.get('mapMesh2');
 		this.MapArrayInfo=[]
 		this.MapArrayPosition=[]
 		this.MapArrayWidth = this.mapMesh.layers[0].width
@@ -305,7 +305,7 @@ export default class Lvl2Scene extends Phaser.Scene {
 	
 		if(wall.collides){
 			
-			this.scene.start("IsaacScene");
+			this.scene.start("Lvl3Scene");
 		
 		}
 	}

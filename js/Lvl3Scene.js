@@ -24,9 +24,9 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 	preload() {
 		
-		this.load.image("tiles", "../assets/tilesets/tilesetKelson.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapKelson.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshKelson.json");
+		this.load.image("tiles3", "../assets/tilesets/tilesetKelson.png");
+		this.load.tilemapTiledJSON("map3", "../assets/tilemaps/tilemapKelson.json");
+		this.load.json("mapMesh3", "../assets/tilemaps/tilemapMapMeshKelson.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		
@@ -37,16 +37,16 @@ export default class Lvl3Scene extends Phaser.Scene {
 	create() {
 	
 
-		const map = this.make.tilemap({ key: "map" });
+		const map = this.make.tilemap({ key: "map3" });
 
-		const tileset = map.addTilesetImage("tilemap", "tiles");
+		const tileset = map.addTilesetImage("tilemap", "tiles3");
 
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 		this.doorLayer = map.createLayer("Door", tileset, 0, 0);
 ///////////////////
 		
-		this.mapMesh = this.cache.json.get('mapMesh');
+		this.mapMesh = this.cache.json.get('mapMesh3');
 		this.MapArrayInfo=[]
 		this.MapArrayPosition=[]
 		this.MapArrayWidth = this.mapMesh.layers[0].width
@@ -115,7 +115,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
 		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
-		this.player.Shooter= new Shoot(this,this.player.sprite, undefined);
+		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
 		this.UI = new UIScene(this,this.player.sprite,'heart');
@@ -160,7 +160,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
 				this.EnemyList.add(this.enemy.sprite);
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
-				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite);
+				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite,"EnemyBullet");
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
 				
@@ -203,7 +203,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		if(this.timer>this.player.Shooter.ReturnDelay()){
 			const directionShoot = this.player.ReturnShootDir()
 			if(directionShoot.x!=0 || directionShoot.y!=0){	
-				const bullet = this.player.Shooter.Shoot(directionShoot,this.player.ReturnPosX(), this.player.ReturnPosY());
+				const bullet = this.player.Shooter.Shoot(directionShoot,this.player.ReturnPosX(), this.player.ReturnPosY(),"PlayerBullet");
 				if(bullet!=undefined){
 					this.BulletList.add(bullet);
 					this.physics.world.addCollider(bullet, this.EnemyList);
@@ -252,7 +252,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		enemy.head.y=enemy.body.y ;
 		if(enemy.Shooter.ReturnDelay()<enemy.Shooter.ReturnTimer()){
 		
-			const bullet = enemy.Shooter.Shoot(3, enemy.x, enemy.y);
+			const bullet = enemy.Shooter.Shoot(3, enemy.x, enemy.y,"EnemyBullet");
 			if(bullet!=undefined){
 				this.EnemyBulletList.add(bullet);
 				this.physics.world.addCollider(bullet, this.player.sprite);

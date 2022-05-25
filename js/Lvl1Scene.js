@@ -20,8 +20,8 @@ export default class Lvl1Scene extends Phaser.Scene {
 
 	preload() {
 		this.load.image("tiles", "../assets/tilesets/146176.png");
-		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemap.json");
-		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMesh.json");
+		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapAdria.json");
+		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshAdria.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
@@ -111,7 +111,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
 		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
-		this.player.Shooter= new Shoot(this,this.player.sprite, undefined);
+		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
 		this.UI = new UIScene(this,this.player.sprite,'heart');
@@ -157,7 +157,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
 	
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
-				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite);
+				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite,"EnemyBullet");
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
 				this.EnemyList.add(this.enemy.sprite);
