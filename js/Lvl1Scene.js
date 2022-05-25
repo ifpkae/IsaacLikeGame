@@ -12,10 +12,15 @@ import Item from "./Item.js";
 
 import UIScene from "./UI.js";
 
+var lvlComplete = false;
+var totalEnemies = 0;
+
 export default class Lvl1Scene extends Phaser.Scene {
 
-	constructor() {
+	constructor(main) {
         super({key: "Lvl1Scene"});
+		this.Main = main
+		
     }
 
 	preload() {
@@ -23,11 +28,16 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.load.tilemapTiledJSON("map", "../assets/tilemaps/tilemapAdria.json");
 		this.load.json("mapMesh", "../assets/tilemaps/tilemapMapMeshAdria.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
+		this.load.atlas("DemonAtlas", "../assets/atlas/DemonAtlasImg.png", "../assets/atlas/DemonAtlasJSON.json");
 		this.load.atlas("ItemsAtlas", "../assets/atlas/ItemsAtlasImg.png", "../assets/atlas/ItemsAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
 		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
 		this.load.audio("Song", "../assets/audios/song.mp3");
+
+		this.load.image('heart', './assets/Images/heart_full.png');
+        this.load.image('damageImage', './assets/Images/damage.png');
+        this.load.image('speedImage', './assets/Images/speed.png');
 		
 		this.load.image('heart', './assets/Images/heart_full.png');
 	}
@@ -46,6 +56,8 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 		this.doorLayer = map.createLayer("Door", tileset, 0, 0);
+		this.closeDoorLayer = map.createLayer("CloseDoor", tileset, 0, 0);
+
 ///////////////////
 		
 		this.mapMesh = this.cache.json.get('mapMesh');
@@ -109,13 +121,20 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.ItemList = this.physics.add.group();
 		
 
-		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
-		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
-		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
-		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
-		this.player.sprite.life = new LifeBehaviour(this, this.player);
+		if(this.Main.ReturnPlayer()==undefined){
+			this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+			this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
+			this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
+			this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
+			this.player.sprite.life = new LifeBehaviour(this, this.player);
+			this.Main.SetPlayer(this.player)
+		}
+		else{
+	
+			this.player.sprite.stats=this.Main.ReturnPlayer().sprite.stats
+		}
 
-		this.UI = new UIScene(this,this.player.sprite,'heart');
+		this.UI = new UIScene(this,this.player.sprite,'heart','damageImage','speedImage');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();
@@ -148,7 +167,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 					}
 				}
 
-				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player);
+				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player,"DemonAtlas");
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
 	
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
@@ -156,6 +175,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
 				this.EnemyList.add(this.enemy.sprite);
+
+				totalEnemies++;
+				console.log(totalEnemies);
 			}
 			else{
 				break;
@@ -274,7 +296,9 @@ export default class Lvl1Scene extends Phaser.Scene {
 
 		if(bullet.scene==this){
 			if(enemy.life.DecreaseHp(bullet.dmg)){
+				totalEnemies--;
 				this.DropItem(enemy);
+				this.CheckDoor();
 			}
 			this.BulletList.remove(bullet);
 			bullet.destroy();
@@ -285,6 +309,8 @@ export default class Lvl1Scene extends Phaser.Scene {
 
 		if(bullet.scene==this){
 			if(player.life.DecreaseHp(bullet.dmg)){
+				totalEnemies = 0;
+				this.Main.SetPlayer(undefined)
 				this.scene.restart();
 			}
 			this.BulletList.remove(bullet);
@@ -296,7 +322,7 @@ export default class Lvl1Scene extends Phaser.Scene {
 
 	ChangeScene(player,wall){
 	
-		if(wall.collides){
+		if(wall.collides && lvlComplete){
 			this.scene.start('Lvl2Scene');
 		}
 	}
@@ -322,17 +348,14 @@ export default class Lvl1Scene extends Phaser.Scene {
 
 	DropItem(enemy){
 		//dmg -0.2 - 1 //speed -50 - 50 // vida -1 o +1 // delay -0.05 - 0.1
-		this.getRandomFloat(0.1,0.2,1);
-		if(0.1){
-			var health = 1;
+		if(this.GetRandomFloat(0.1,0.2,1) == 0.1){
+			if(this.GetRandomFloat(0.1,0.2,1) == 0.1) var health = 1;
+			else var health = -1;
+
+			this.item= new Item(this,enemy.x,enemy.y,this.GetRandomFloat(-0.2,1,1),this.GetRandomFloat(-50,50,0),health,this.GetRandomFloat(-0.05,0.1,2),this.GetRandomFloat(1,10,0));
+			this.ItemList.add(this.item.sprite)
+			this.item.sprite.dataItem=this.item;
 		}
-		else{
-			var health = -1;
-		}
-		console.log(health);
-		this.item= new Item(this,enemy.x,enemy.y,this.getRandomFloat(-0.2,1,1),this.getRandomFloat(-50,50,0),health,this.getRandomFloat(-0.05,0.1,2),this.getRandomFloat(1,10,0));
-		this.ItemList.add(this.item.sprite)
-		this.item.sprite.dataItem=this.item;
 	}
 
 	ReturnMapSizeX(){
@@ -342,9 +365,16 @@ export default class Lvl1Scene extends Phaser.Scene {
 		this.map.heightInPixels;
 	}
 
-	getRandomFloat(min, max, decimals) {
+	GetRandomFloat(min, max, decimals) {
 		const str = (Math.random() * (max - min) + min).toFixed(decimals);
 	  
 		return parseFloat(str);
+	}
+
+	CheckDoor() {
+		if(totalEnemies == 0){
+			lvlComplete = true;
+			this.closeDoorLayer.destroy()
+		} 
 	}
   }

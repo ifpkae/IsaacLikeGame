@@ -2,7 +2,7 @@
 import MovementBehaviour from "./MovementBehaviour.js";
 
 export default class Enemy {
-	constructor(scene, x, y, objective) {
+	constructor(scene, x, y, objective, atlasName) {
 		this.scene = scene;
 		this.Dead=false;
 		var HeadRecoverTimePassed;
@@ -16,7 +16,7 @@ export default class Enemy {
 		const anims = scene.anims;
 		anims.create({
 			key: "SideMove",
-			frames: anims.generateFrameNames("IsaacAtlas", {
+			frames: anims.generateFrameNames(atlasName, {
 			prefix: "SMove",
 			start: 1,
 			end: 10,
@@ -27,7 +27,7 @@ export default class Enemy {
 		});
 		anims.create({
 			key: "FrontBackMove",
-			frames: anims.generateFrameNames("IsaacAtlas", {
+			frames: anims.generateFrameNames(atlasName, {
 			prefix: "FBMove",
 			start: 1,
 			end: 10,
@@ -39,10 +39,10 @@ export default class Enemy {
 		
 		this.Object=this;
 		
-		this.sprite = scene.physics.add.sprite(x, y, "IsaacAtlas", "FBMove3").setSize(40, 40).setOffset(12, 12).setFriction(0, 0);
+		this.sprite = scene.physics.add.sprite(x, y, atlasName, "FBMove3").setSize(20, 20).setOffset(12, 12).setFriction(0, 0).setOrigin(0.6,0.3).setScale(2,2);
         
 
-		this.sprite.head = scene.physics.add.sprite(x, y, "IsaacAtlas", "FrontFaceNormal").setSize(40, 40).setOffset(12, 12);
+		this.sprite.head = scene.physics.add.sprite(x, y, atlasName, "FrontFaceNormal").setSize(20, 20).setOffset(12, 12).setOrigin(0.6,0.3).setScale(2,2);
 		this.sprite.head.setDepth(10);
 
 		this.sprite.head.y = this.sprite.y-19;

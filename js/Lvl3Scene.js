@@ -13,26 +13,35 @@ import Item from "./Item.js";
 
 import UIScene from "./UI.js";
 
-
-
+var lvlComplete = false;
+var totalEnemies = 0;
 
 export default class Lvl3Scene extends Phaser.Scene {
 	
-	constructor() {
+	constructor(main) {
         super({key: "Lvl3Scene"});
+		this.Main = main
+		
     }
 
 	preload() {
-		
+		this.Main.SetScene(this)
 		this.load.image("tiles3", "../assets/tilesets/tilesetKelson.png");
 		this.load.tilemapTiledJSON("map3", "../assets/tilemaps/tilemapKelson.json");
 		this.load.json("mapMesh3", "../assets/tilemaps/tilemapMapMeshKelson.json");
 		this.load.atlas("IsaacAtlas", "../assets/atlas/IsaacAtlasImg.png", "../assets/atlas/IsaacAtlasJSON.json");
+		this.load.atlas("FatAtlas", "../assets/atlas/FatAtlasImg.png", "../assets/atlas/FatAtlasJSON.json");
 		this.load.atlas("ItemsAtlas", "../assets/atlas/ItemsAtlasImg.png", "../assets/atlas/ItemsAtlasJSON.json");
 		this.load.atlas("BulletAtlas", "../assets/atlas/BulletAtlasImg.png", "../assets/atlas/BulletAtlasJSON.json");
 		
 
+		this.load.audio("HitPlayer", "../assets/audios/hitPlayer.mp3");
+		this.load.audio("KillPlayer", "../assets/audios/diePlayer.mp3");
+		this.load.audio("Song", "../assets/audios/song.mp3");
+		
 		this.load.image('heart', './assets/Images/heart_full.png');
+		this.load.image('damageImage', './assets/Images/damage.png');
+        this.load.image('speedImage', './assets/Images/speed.png');
 	}
   
 	create() {
@@ -45,6 +54,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.groundLayer = map.createLayer("Ground", tileset, 0, 0);
 		this.wallsLayer = map.createLayer("Walls", tileset, 0, 0);
 		this.doorLayer = map.createLayer("Door", tileset, 0, 0);
+		this.closeDoorLayer = map.createLayer("CloseDoor", tileset, 0, 0);
 ///////////////////
 		
 		this.mapMesh = this.cache.json.get('mapMesh3');
@@ -114,12 +124,12 @@ export default class Lvl3Scene extends Phaser.Scene {
 		
 
 		this.player = new Player(this, spawnPoint.x, spawnPoint.y);
-		this.player.sprite.stats = new Stats(this, this.player.sprite, 300,2,5,0.3)
+		this.player.sprite.stats = this.Main.ReturnPlayer().sprite.stats
 		this.player.sprite.move =new MovementBehaviour(this, this.player.sprite)
 		this.player.Shooter= new Shoot(this,this.player.sprite, undefined,"PlayerBullet");
 		this.player.sprite.life = new LifeBehaviour(this, this.player);
 
-		this.UI = new UIScene(this,this.player.sprite,'heart');
+		this.UI = new UIScene(this,this.player.sprite,'heart','damageImage','speedImage');
 		this.UI.showLife();
 		this.UI.showDmg();
 		this.UI.showSpeed();
@@ -151,16 +161,18 @@ export default class Lvl3Scene extends Phaser.Scene {
 						this.BulletDmg=map.objects[1].objects[this.num].properties[this.num2].value
 					}
 				}
-				console.log(this.Speed)
-				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player);
+
+				this.enemy= new Enemy(this,map.objects[1].objects[this.num].x, map.objects[1].objects[this.num].y,this.player,"FatAtlas");
 				this.enemy.sprite.stats = new Stats(this, this.enemy.sprite, this.Speed,this.BulletDmg,this.Life,this.ShootDelay)
-				this.EnemyList.add(this.enemy.sprite);
+	
 				this.enemy.sprite.life =new LifeBehaviour(this, this.enemy);
 				this.enemy.sprite.Shooter= new Shoot(this, this.enemy.sprite, this.player.sprite,"EnemyBullet");
 				this.enemy.sprite.move =new MovementBehaviour(this, this.enemy.sprite)
 				this.enemy.sprite.AI = new PathFinding(this,this.enemy,this.player,this.MapArrayInfo,this.MapArrayPosition,this.tileHeight)
-				
-				
+				this.EnemyList.add(this.enemy.sprite);
+
+				totalEnemies++;
+				console.log(totalEnemies);
 			}
 			else{
 				break;
@@ -178,9 +190,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 		this.physics.add.overlap(this.ItemList, this.PlayerGroup, this.PickItem, null, this);
 
-
 		this.physics.world.addCollider(this.PlayerGroup, this.wallsLayer);
-
 	
 		this.physics.world.addCollider(this.EnemyList, this.EnemyList);
 		
@@ -189,17 +199,18 @@ export default class Lvl3Scene extends Phaser.Scene {
 		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 		this.timer=0;
+
 	}
   
 	update(time, delta) {
-		
+	
 		this.timer += (1*delta)/1000;
 		// Allow the player to respond to key presses and move itself
 		this.player.update(time,delta);
 		if(this.timer>this.player.Shooter.ReturnDelay()){
 			const directionShoot = this.player.ReturnShootDir()
 			if(directionShoot.x!=0 || directionShoot.y!=0){	
-				const bullet = this.player.Shooter.Shoot(directionShoot,this.player.ReturnPosX(), this.player.ReturnPosY(),"PlayerBullet");
+				const bullet = this.player.Shooter.Shoot(directionShoot,this.player.ReturnPosX(), this.player.ReturnPosY());
 				if(bullet!=undefined){
 					this.BulletList.add(bullet);
 					this.physics.world.addCollider(bullet, this.EnemyList);
@@ -238,6 +249,7 @@ export default class Lvl3Scene extends Phaser.Scene {
 	UpdateEnemies(enemy){
 		if(enemy.AI.ReturnDelay()<enemy.AI.ReturnTimer()){
 			enemy.AI.ReCalculate()
+
 		}
 		
 		enemy.move.Move(enemy.AI.ReturnDirection());
@@ -246,12 +258,13 @@ export default class Lvl3Scene extends Phaser.Scene {
 		enemy.head.y=enemy.body.y ;
 		if(enemy.Shooter.ReturnDelay()<enemy.Shooter.ReturnTimer()){
 		
-			const bullet = enemy.Shooter.Shoot(3, enemy.x, enemy.y,"EnemyBullet");
+			const bullet = enemy.Shooter.Shoot(3, enemy.x, enemy.y);
 			if(bullet!=undefined){
 				this.EnemyBulletList.add(bullet);
 				this.physics.world.addCollider(bullet, this.player.sprite);
 				this.physics.world.addCollider(bullet, this.wallsLayer);
 				enemy.Shooter.ResetTimer()
+		
 			}
 			
 		}
@@ -278,7 +291,9 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 		if(bullet.scene==this){
 			if(enemy.life.DecreaseHp(bullet.dmg)){
+				totalEnemies--;
 				this.DropItem(enemy);
+				this.CheckDoor();
 			}
 			this.BulletList.remove(bullet);
 			bullet.destroy();
@@ -289,7 +304,11 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 		if(bullet.scene==this){
 			if(player.life.DecreaseHp(bullet.dmg)){
-				this.scene.restart();
+				totalEnemies = 0;
+				this.song.stop();
+				this.killPlayer.play();
+				this.Main.SetPlayer(undefined)
+				this.scene.start("Lvl1Scene");
 			}
 			this.BulletList.remove(bullet);
 			bullet.destroy();
@@ -300,12 +319,11 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 	ChangeScene(player,wall){
 	
-		if(wall.collides){
-			
-			this.scene.start("IsaacScene");
-		
+		if(wall.collides && lvlComplete){
+			this.scene.start('Lvl2Scene');
 		}
 	}
+
 
 	PickItem(item,player){
 		
@@ -327,17 +345,14 @@ export default class Lvl3Scene extends Phaser.Scene {
 
 	DropItem(enemy){
 		//dmg -0.2 - 1 //speed -50 - 50 // vida -1 o +1 // delay -0.05 - 0.1
-		this.getRandomFloat(0.1,0.2,1);
-		if(0.1){
-			var health = 1;
+		if(this.GetRandomFloat(0.1,0.2,1) == 0.1){
+			if(this.GetRandomFloat(0.1,0.2,1) == 0.1) var health = 1;
+			else var health = -1;
+
+			this.item= new Item(this,enemy.x,enemy.y,this.GetRandomFloat(-0.2,1,1),this.GetRandomFloat(-50,50,0),health,this.GetRandomFloat(-0.05,0.1,2),this.GetRandomFloat(1,10,0));
+			this.ItemList.add(this.item.sprite)
+			this.item.sprite.dataItem=this.item;
 		}
-		else{
-			var health = -1;
-		}
-		console.log(health);
-		this.item= new Item(this,enemy.x,enemy.y,this.getRandomFloat(-0.2,1,1),this.getRandomFloat(-50,50,0),health,this.getRandomFloat(-0.05,0.1,2),this.getRandomFloat(1,10,0));
-		this.ItemList.add(this.item.sprite)
-		this.item.sprite.dataItem=this.item;
 	}
 
 	ReturnMapSizeX(){
@@ -347,9 +362,16 @@ export default class Lvl3Scene extends Phaser.Scene {
 		this.map.heightInPixels;
 	}
 
-	getRandomFloat(min, max, decimals) {
+	GetRandomFloat(min, max, decimals) {
 		const str = (Math.random() * (max - min) + min).toFixed(decimals);
 	  
 		return parseFloat(str);
+	}
+
+	CheckDoor() {
+		if(totalEnemies == 0){
+			lvlComplete = true;
+			this.closeDoorLayer.destroy()
+		} 
 	}
   }

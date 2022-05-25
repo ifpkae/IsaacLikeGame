@@ -1,6 +1,6 @@
 export default class UIScene extends Phaser.Scene
 {
-    constructor(scene,player, heartImage)
+    constructor(scene,player, heartImage, damageImage, speedImage)
     {
         super()
         this.scene = scene;
@@ -10,6 +10,8 @@ export default class UIScene extends Phaser.Scene
         var textSpeed;
         this.heartsarray = []; 
         this.heartImage = heartImage;
+        this.damageImage = damageImage;
+        this.speedImage = speedImage;
     }
 
     showLife()
@@ -20,8 +22,8 @@ export default class UIScene extends Phaser.Scene
 
         this.heartsarray = [];
 
-        for(var i = 0; i < this.player.life.ReturnMaxHp(); i++) {  
-            var hearts = this.scene.add.sprite(100 + i * 32,100,this.heartImage);
+        for(var i = 0; i < this.player.life.ReturnMaxHp(); i++) {
+            var hearts = this.scene.add.sprite(132 + i * 32,32,this.heartImage);
             let test = this.heartsarray.push(hearts);
         }
     }
@@ -30,8 +32,8 @@ export default class UIScene extends Phaser.Scene
     {
         this.showLife();
         for(var i = 0; i < this.player.life.ReturnMaxHp(); i++)
-        {  
-            if(i <= this.player.life.ReturnHp())
+        {
+            if(i < this.player.life.ReturnHp())
             {
                 this.heartsarray[i].setVisible(true);
             }
@@ -44,22 +46,24 @@ export default class UIScene extends Phaser.Scene
 
     showDmg()
     {
-        this.textDmg=this.scene.add.text(100,150,'Dmg: '+ this.player.stats.ReturnDmg(),{ fontSize: 32})
+        this.scene.add.sprite(10,70,this.damageImage).setOrigin(0);
+        this.textDmg=this.scene.add.text(50,70, this.player.stats.ReturnDmg(),{ fontSize: 32})
     }
 
     updateDmg()
     {
-        this.textDmg.setText('Dmg: '+ this.player.stats.ReturnDmg())
+        this.textDmg.setText(this.player.stats.ReturnDmg())
     }
 
     showSpeed()
     {
-        this.textSpeed=this.scene.add.text(100,200,'Speed: '+ this.player.stats.ReturnSpeed(),{ fontSize: 32})
+        this.scene.add.sprite(10,120,this.speedImage).setOrigin(0);
+        this.textSpeed=this.scene.add.text(50,120, this.player.stats.ReturnSpeed(),{ fontSize: 32})
     }
 
     updateSpeed()
     {
-        this.textSpeed.setText('Speed: '+ this.player.stats.ReturnSpeed())
+        this.textSpeed.setText(this.player.stats.ReturnSpeed())
     }
 
 }
